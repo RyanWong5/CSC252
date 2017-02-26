@@ -52,12 +52,19 @@ L4:	#min
 
 	#max
 	la $t0, max
-	lw $t2, 40($s2)
+	sll $t4, $t1, 2 #multiply arraylength by 4 because each word is 4 bytes
+	add $t3, $s2, $t4
+	lw $t2, 0($t3)
 	sw $t2, 0($t0)
 
-	#median
+	#median = (n+1)/2
 	la $t0, median
-	lw $t2, 20($s2)
+	add $t3, $s2, $zero #get copy of base array address
+	addi $t4, $t1, 1 #n+1
+	srl $t4, $t4, 1 #shift right by divide by 2^1
+	sll $t4, $t4, 2 #multiply by 4 because each word is 4 bytes
+	add $t3, $t3, $t4
+	lw $t2, 0($t3)
 	sw $t2, 0($t0)
 
 li $v0, 10
