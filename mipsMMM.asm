@@ -33,6 +33,8 @@ L1:	sll $a3,$a2,2		#4 byte shift
 	li $v0, 1
 	move $a0,$t0
 	syscall	
+	move $a0,$s6
+	syscall
 	li $v0,4
 	la $a0,string2
 	syscall
@@ -44,6 +46,7 @@ L1:	sll $a3,$a2,2		#4 byte shift
 	j L1
 newMin:
 	move $t0,$t1		#copy new min to cur min
+	move $s6,$a2
 	addi $a2,$a2,1		#increment inner for loop
 	j L1
 
