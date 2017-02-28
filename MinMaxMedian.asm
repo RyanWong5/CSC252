@@ -15,11 +15,11 @@ median: .word 0
 	addi $s4, $s4, 1 #initialize counter s4, a.k.a j
 	
 L1:	sub $t4, $s3, $t1 #for loop testing i<n
-	bgtz $t4, L4 #if it's less than 0, s4 else L4 end
+	beqz $t4, L4 #if it's less than 0, s4 else L4 end
 	la $s5, ($s2) #create copy of base memory
  	sub $t5, $t1, $s3 #t5 = n-i
 L2:		sub $t6, $s4, $t5 #t6 = j < (n-i) or j-(n-j)
-		bgtz $t6, L3 #if above is false then keep going, otherwise branch to L3
+		beqz $t6, L3 #if above is false then keep going, otherwise branch to L3
 		lw $t7, 0($s5) #grab nums[i]
 		lw $t8, 4($s5) #grab nums[i+1]
 		sub $t9, $t8, $t7 # t9 = nums[i+1]-nums[i].
@@ -53,6 +53,7 @@ L4:	#min
 	#max
 	la $t0, max
 	sll $t4, $t1, 2 #multiply arraylength by 4 because each word is 4 bytes
+	subi $t4, $t4, 4 #subtract by 4 to get the offset by n-1 terms
 	add $t3, $s2, $t4
 	lw $t2, 0($t3)
 	sw $t2, 0($t0)
@@ -63,6 +64,7 @@ L4:	#min
 	addi $t4, $t1, 1 #n+1
 	srl $t4, $t4, 1 #shift right by divide by 2^1
 	sll $t4, $t4, 2 #multiply by 4 because each word is 4 bytes
+	subi $t4, $t4, 4 #subtract by 4 to get the offset by n-1 terms
 	add $t3, $t3, $t4
 	lw $t2, 0($t3)
 	sw $t2, 0($t0)
