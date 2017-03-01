@@ -1,10 +1,9 @@
 # merge sort
 #java implementation for reference - https://www.cs.cmu.edu/~adamchik/15-121/lectures/Sorting%20Algorithms/code/MergeSort.java
 .data
-nums: .word 10, 9, 8, 7
-sorted: .word 0:4
-length: .word 4
-msg: .asciiz "Split Finished"
+nums: .word 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+sorted: .word 0:10
+length: .word 10
 .text
 
 la $s0, nums #base address of nums array a
@@ -173,8 +172,5 @@ merge: #param (left, right, rightEnd)
 		jr $ra
 		nop
 
-la $a0, msg
-li $v0, 4
-syscall
 li $v0, 10
 syscall
