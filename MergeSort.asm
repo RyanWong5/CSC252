@@ -30,6 +30,7 @@ mergeSort: #(left, right)
 		lw $t3, 12($sp) #t3 = center
 		
 		sub $t2, $t0, $t1
+		addi $t2, $t2, 1 #to stop at 0th index
 		beqz $t2, end #if left - right < 0 then $t2 and keep going, otherwise end
 		
 		add $t3, $t0, $t1 #t3 = center
@@ -37,8 +38,7 @@ mergeSort: #(left, right)
 		sw $t3, 12($sp) #storing center into stack
 		
 		#mergeSort (left, center) - left hand side
-		# move $sp back another 16
-		addi $sp, $sp, -16
+		addi $sp, $sp, -16 # move $sp back another 16
 		sw $t0, 4($sp) #left into sp offset 4
 		sw $t3, 8($sp) #center into sp offset 8 right
 		
@@ -47,8 +47,8 @@ mergeSort: #(left, right)
 		
 		#mergeSort(center+1, right) - right hand side of array
 		# move $sp back another 16
-		lw $t4, 12($sp)
-		addi $sp, $sp, -16
+		lw $t4, 12($sp) #center
+		subi $sp, $sp, -16
 		addi $t4, $t4, 1 #center+1
 		sw $t4, 4($sp)
 		sw $t1, 8($sp)
@@ -56,16 +56,85 @@ mergeSort: #(left, right)
 		jal mergeSort
 		sw $ra, 0($sp)
 		
-		#merge(left, center+1, right)
+		#merge param(left, right, rightEnd) (left, center+1, right)
+		lw $t5, 12($sp) #load center
+		subi $sp, $sp, 16
+		addi $t5, $t5, 1 #center + 1
+		sw $t0, 4($sp)
+		sw $t5, 8($sp)
+		sw $t1, 12($sp) #t1 = right
 		
-	lw $ra, 0($sp) #get return address
-	addi $sp, $sp, 16 #pop
-	jr $ra #jump back
+		jal merge
+		sw $ra, 0($sp)
+		
+		#end of mergeSort method	
+		lw $ra, 0($sp) #get return address
+		addi $sp, $sp, 16 #pop
+		jr $ra #jump back
 	
 
-merge:
-
-# create a 3rd offset to store local variable Center
+merge: #param (left, right, rightEnd)
+	lw $t0, 4($sp) #t0 = left
+	lw $t1, 8($sp) #t1 = right
+	lw $t2, 12($sp) #t2 = rightEnd
+	subi $t3, $t1, 1 #t3 = leftEnd = right - 1
+	add $t4, $t0, $zero #t4 = k
+	sub $t5, $t2, $t0
+	addi $t5, $t5, 1 #t5 = num = rightEnd - left + 1
+	
+	firstWhile:	#while(left <= leftEnd && right <= rightEnd)
+		 	sub $t6, $t0, $t3 #t6 = left - leftEnd
+			bgtz $t6, secondWhile
+			sub $t7, $t1, $t2 #t7 = right - rightEnd
+			bgtz $t7, secondWhile
+				sll $t8, $t0, 2 #t8 = left * 4 to offset 
+				sll $t9, $t1, 2 #t9 = right * 4
+				add $t8, $t8, $s0 #offset copy of base array by left amount
+				add $t9, $t9, $s0 #offset copy of base array by right
+				lw $s2, 0($t8) #a[left]
+				lw $s3, 0($t9) #a[right]
+				sub $s4, $s2, $s3 #if(a[left].compareTo(a[right]) <= 0)
+				bgtz $s4, else
+					sll $s5, $t4, 2 #4*k to get offset amount
+					sw $s2, sorted($s5)
+					addi $t0, $t0, 1 #increment left by 1
+					addi $t4, $t4, 1 #k++
+				else: 
+					sll $s5, $t4, 2
+					sw $t9, sorted($s5)
+					addi $t1, $t1, 1 #increment right by 1
+					addi $t4, $t4, 1 #k++
+				J firstWhile
+			
+	secondWhile: #copy rest of left half
+			sub $t6, $t0, $t3
+			bgtz $t6, thirdWhile
+				sll $t7, $t0, 2 #left offset by 4
+				add $t7, $t7, $s0
+				lw $t7, 0($t7) #a[left]
+				
+				sll $t8, $t4, 2 #copy of k offset by 4
+				sw $t7, sorted($t8)
+				
+				addi $t0, $t0, 1 #increment left by 1
+				addi $t4, $t4, 1 #increment k by 1
+				J secondWhile
+	thirdWhile: #copy rest of right half
+			sub $t6, $t1, $t2
+			bgtz $t6, endMerge
+				sll $t7, $t1, 2 #right offset by 4
+				add $t7, $t7, $s0
+				lw $t7, 0($t7) #a[right]
+				
+				sll $t8, $t4, 2
+				sw $t7, sorted($t8) #store tmp[k] = a[right]
+				
+				addi $t1, $t1, 1 #increment right by 1
+				addi $t4, $t4, 1 #increment k by 1
+		
+	endMerge: #need to jump back to mergeSort label after finished
+		lw $ra, 0($sp)
+		jr $ra
 
 end: 
 la $a0, msg
