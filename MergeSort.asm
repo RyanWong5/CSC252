@@ -20,9 +20,13 @@ sub $a2, $s1, 1 #a.length-1
 sw $a1, 4($sp)
 sw $a2, 8($sp)
 
+
 jal mergeSort #step into mergeSort
 sw $ra, 0($sp)
 
+end:
+li $v0, 10
+syscall
 mergeSort: #(left, right)
 		#load from stack
 		lw $t0, 4($sp) #t0 = left
@@ -30,8 +34,8 @@ mergeSort: #(left, right)
 		lw $t3, 12($sp) #t3 = center
 		
 		sub $t2, $t0, $t1
-		addi $t2, $t2, 1 #to stop at 0th index
-		beqz $t2, end #if left - right < 0 then $t2 and keep going, otherwise end
+		#addi $t2, $t2, 1 #to stop at 0th index
+		beqz $t2, endMS #if left - right < 0 then $t2 and keep going, otherwise end
 		
 		add $t3, $t0, $t1 #t3 = center
 		srl $t3, $t3, 1 #t3 = center = (left+right)/2
@@ -47,8 +51,11 @@ mergeSort: #(left, right)
 		
 		#mergeSort(center+1, right) - right hand side of array
 		# move $sp back another 16
+		addi $sp, $sp, 16 #pop
+		lw $t1, 8($sp) #right
 		lw $t4, 12($sp) #center
-		subi $sp, $sp, -16
+		
+		addi $sp, $sp, -16
 		addi $t4, $t4, 1 #center+1
 		sw $t4, 4($sp)
 		sw $t1, 8($sp)
@@ -57,22 +64,26 @@ mergeSort: #(left, right)
 		sw $ra, 0($sp)
 		
 		#merge param(left, right, rightEnd) (left, center+1, right)
-		lw $t5, 12($sp) #load center
-		subi $sp, $sp, 16
-		addi $t5, $t5, 1 #center + 1
-		sw $t0, 4($sp)
-		sw $t5, 8($sp)
-		sw $t1, 12($sp) #t1 = right
+		#lw $t5, 12($sp) #load center
+		addi $sp, $sp, 16
+		#addi $t5, $t5, 1 #center + 1
+		#sw $t0, 4($sp)
+		#sw $t5, 8($sp)
+		#sw $t1, 12($sp) #t1 = right
 		
-		jal merge
-		sw $ra, 0($sp)
+		#jal merge
+		#sw $ra, 0($sp)
 		
 		#end of mergeSort method	
 		lw $ra, 0($sp) #get return address
-		addi $sp, $sp, 16 #pop
 		jr $ra #jump back
+		nop
 	
-
+endMS: #load address to jump back
+	lw $ra, 0($sp)
+	jr $ra
+	nop
+	
 merge: #param (left, right, rightEnd)
 	lw $t0, 4($sp) #t0 = left
 	lw $t1, 8($sp) #t1 = right
@@ -136,7 +147,7 @@ merge: #param (left, right, rightEnd)
 		lw $ra, 0($sp)
 		jr $ra
 
-end: 
+
 la $a0, msg
 li $v0, 4
 syscall
