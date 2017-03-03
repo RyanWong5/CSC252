@@ -113,6 +113,8 @@ merge: #param (left, right, rightEnd)
 					sw $s2, sorted($s5)
 					addi $t0, $t0, 1 #increment left by 1
 					addi $t4, $t4, 1 #k++
+					J firstWhile
+					nop
 				else: 
 					sll $s5, $t4, 2 #4*k to get offset amount
 					sw $s3, sorted($s5)
@@ -136,11 +138,12 @@ merge: #param (left, right, rightEnd)
 				addi $t4, $t4, 1 #increment k by 1
 				J secondWhile
 				nop
+				
 	thirdWhile: #copy rest of right half
 			sub $t6, $t2, $t1
 			bgtz $t6, copyArray
 			nop
-				sll $t7, $t1, 2 #right offset by 4
+				sll $t7, $t2, 2 #right offset by 4
 				add $t7, $t7, $s0
 				lw $t7, 0($t7) #a[right]
 				
@@ -149,6 +152,8 @@ merge: #param (left, right, rightEnd)
 				
 				addi $t2, $t2, 1 #increment right by 1
 				addi $t4, $t4, 1 #increment k by 1
+			J thirdWhile
+			nop
 	
 	copyArray: #a[] = tmp[]
 			li $t6, 0
