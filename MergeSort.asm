@@ -26,6 +26,7 @@ sw $ra, 0($sp)
 end:
 li $v0, 10
 syscall
+
 mergeSort: #(left, right)
 		#load from stack
 		lw $t0, 4($sp) #t0 = left
@@ -75,14 +76,10 @@ mergeSort: #(left, right)
 		nop
 		
 		#end of mergeSort method	
-		lw $ra, 0($sp) #get return address
-		jr $ra #jump back
-		nop
-	
-endMS: #load address to jump back
-	lw $ra, 0($sp)
-	jr $ra
-	nop
+		endMS: #load address to jump back
+			lw $ra, 0($sp)
+			jr $ra
+			nop
 	
 merge: #param (left, right, rightEnd)
 	lw $t0, 4($sp) #t0 = left
@@ -176,6 +173,3 @@ merge: #param (left, right, rightEnd)
 		#addi $sp, $sp, 16
 		jr $ra
 		nop
-
-li $v0, 10
-syscall
