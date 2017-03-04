@@ -9,6 +9,11 @@ matrixB: .word 5,6,7,8,9,10
 sizeA: .word 3,2
 sizeB: .word 2,3
 result: .word 0:9
+#matrixA: .word 1,2,3,4,5,6,7,8,9
+#matrixB: .word 10,11,12,13,14,15
+#sizeA: .word 3,3
+#sizeB: .word 3,2
+#result: .word 0:6
 
 
 		.data
@@ -45,7 +50,7 @@ main:
 	
 	
 						#get the initial row in A to multiply by:
-	lw $a2, 4($s3)				#Take the number of columns in A
+	lw $a2, 4($s4)				#Take the number of columns in A
 	sll $a2, $a2,2				#convert from number to bytes
 	lw $a3, 4($s4)				#take the number of columns in B
 	lw $t0, ($s4)				#take the number of rows in B
@@ -73,6 +78,24 @@ stayRowchangeColumn:
 	move $a0,$t0
 #	syscall
 	lw $t2,($t1)				#second term to be multiplied from B
+	
+#	li $v0,1 	
+#	move $a0,$t0
+#	syscall
+	
+#	li $v0,4
+#	la $a0,mult
+#	syscall
+#	li $v0,1 
+#	move $a0,$t2
+#	syscall
+	
+	
+	
+#	li $v0,4
+#	la $a0,string2
+#	syscall
+#	li $v0,1 
 	
 	mul $t8, $t0,$t2			#t8 will represent the multiplication of the values
 	add $t9,$t8,$t9				#t9 will hold the running sum
@@ -108,7 +131,7 @@ stayRowchangeColumn:
 	move $t6,$s6
 	li $t9, 0				#resets t0 to 0
 	
-	bgt $t4,$a2, incRow			
+	bge $t4,$a2, incRow			
 	nop
 	
 	
