@@ -14,7 +14,9 @@ string3:	.asciiz   "\nTarget found at: "		#Number found at
 main:		
 		li $v0,1		#set the syscall to print ints
 		la $t4,nums 		#load address of nums into t5
-		li $t9, 11		#target val is 11
+		la $t9, target
+		lw $t9, ($t9)
+#		li $t9, 10		#target val is 11
 		move $a0,$t9 		#testing to see if 11 was properly added
 		#syscall
 		
