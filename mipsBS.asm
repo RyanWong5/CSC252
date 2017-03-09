@@ -58,6 +58,9 @@ L2:		li	$v0, 4			# load appropriate system call code into register $v0;
 		la 	$a0, string3		# jumps here if # found
 		syscall				# call operating system to perform print operation
 		li 	$v0,1
+		la $t8, 0($t5)
+		sub $t8, $t8, $t4
+		srl $t8, $t8, 2 #index starts at 0, so -1
 		move	$a0,$t8
 		syscall
 #		addi $t9,$t9,1			#add +1 to target
