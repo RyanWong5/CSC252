@@ -1,7 +1,10 @@
 # merge sort
 #java implementation for reference - https://www.cs.cmu.edu/~adamchik/15-121/lectures/Sorting%20Algorithms/code/MergeSort.java
 .data
-nums: .word 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+#nums: .word 30, 40, 10, 9, 9, 20, 8, 7, 6, 5, 16, 4, 3, 2, 1,11,12,13,15
+#sorted: .word 0:19
+#length: .word 19
+nums: .word 10,9,8,7,6,5,4,3,2,1
 sorted: .word 0:10
 length: .word 10
 .text
@@ -93,10 +96,10 @@ merge: #param (left, right, rightEnd)
 	firstWhile:	#while(left <= leftEnd && right <= rightEnd)
 		 	sub $t6, $t0, $t3 #t6 = left - leftEnd
 			bgtz $t6, secondWhile
-			nop
+			#nop
 			sub $t7, $t2, $t1 #t7 = right - rightEnd
 			bgtz $t7, secondWhile
-			nop
+			#nop
 				sll $t8, $t0, 2 #t8 = left * 4 to get offset amount 
 				sll $t9, $t2, 2 #t9 = right * 4 to get offset amount
 				add $t8, $t8, $s0 #offset copy of base array by left amount
@@ -105,15 +108,14 @@ merge: #param (left, right, rightEnd)
 				lw $s3, 0($t9) #a[right]
 				sub $s4, $s2, $s3 #if(a[left].compareTo(a[right]) <= 0)
 				bgtz $s4, else
-				nop
-					sll $s5, $t4, 2 #4*k to get offset amount
+				sll $s5, $t4, 2 #4*k to get offset amount
 					sw $s2, sorted($s5)
 					addi $t0, $t0, 1 #increment left by 1
 					addi $t4, $t4, 1 #k++
 					J firstWhile
 					nop
 				else: 
-					sll $s5, $t4, 2 #4*k to get offset amount
+					#sll $s5, $t4, 2 #4*k to get offset amount
 					sw $s3, sorted($s5)
 					addi $t2, $t2, 1 #increment right by 1
 					addi $t4, $t4, 1 #k++
@@ -123,7 +125,7 @@ merge: #param (left, right, rightEnd)
 	secondWhile: #copy rest of left half
 			sub $t6, $t0, $t3
 			bgtz $t6, thirdWhile
-			nop
+			#nop
 				sll $t7, $t0, 2 #left offset by 4
 				add $t7, $t7, $s0
 				lw $t7, 0($t7) #a[left]
@@ -139,7 +141,7 @@ merge: #param (left, right, rightEnd)
 	thirdWhile: #copy rest of right half
 			sub $t6, $t2, $t1
 			bgtz $t6, copyArray
-			nop
+			#nop
 				sll $t7, $t2, 2 #right offset by 4
 				add $t7, $t7, $s0
 				lw $t7, 0($t7) #a[right]
@@ -169,7 +171,5 @@ merge: #param (left, right, rightEnd)
 
 	endMerge: #need to jump back to address after finished
 		lw $ra, 0($sp)
-		#pop here?
-		#addi $sp, $sp, 16
 		jr $ra
 		nop
